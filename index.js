@@ -1,7 +1,11 @@
 const express = require("express");
 const path = require("path");
+const cookieParser = require("cookie-parser");
 const { connectToMongoDB } = require("./connection");
+const { restrictToLoggedInUserOnly, checkAuth } = require("./middlewares/auth");
+
 const urlRoute = require("./routes/url");
+const userRoute = require("./routes/user");
 const staticRoutes = require("./routes/staticRoutes");
 
 const app = express();
@@ -16,9 +20,10 @@ app.set("views", path.resolve("./views"));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
-app.use("/url", urlRoute);
-
-app.use("/", staticRoutes);
+app.use("/url", restrictToLoggedInUserOnly, urlRoute);
+app.use("/user", userRoute);
+app.use("/", checkAuth, staticRoutes);
 
 app.listen(PORT, () => console.log(`Server started at ${PORT}`));
