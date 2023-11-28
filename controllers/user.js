@@ -17,8 +17,8 @@ async function handleUserLogin(req, res) {
     const user = await User.findOne({ email, password });
     if (!user) return res.render("login", { error: "Invalid Credentials" });
     const token = setUser(user);
-    res.cookie("uid", token);
-    return res.redirect("/");
+    // res.cookie("uid", token);
+    return res.json({ token });
 }
 
 module.exports = { handleUserSignUp, handleUserLogin };
