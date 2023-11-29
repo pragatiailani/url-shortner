@@ -1,18 +1,18 @@
 const { getUser } = require("../services/auth");
 
+// AUTHENTICATION
 function checkForAuthentication(req, res, next) {
-    const authorizationHeaderValue = req.headers["authorization"];
+    const tokenCookie = req.cookies?.token;
     req.user = null;
     if (
-        !authorizationHeaderValue ||
-        !authorizationHeaderValue.startsWith("Bearer")
+        !tokenCookie
     )
         return next();
-    const token = authorizationHeaderValue.split("Bearer ")[1];
-    req.user = getUser(token);
+    req.user = getUser(tokenCookie);
     return next();
 }
 
+// AUTHORIZATION
 function restrictTo(roles) {
     return function (req, res, next) {
         if (!req.user) return res.redirect("/login");
